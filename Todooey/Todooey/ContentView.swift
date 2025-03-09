@@ -5,7 +5,6 @@
 //  Created by Jiyoon Moon on 2/23/25.
 //
 
-
 import SwiftUI
 
 struct Todo: Identifiable {
@@ -15,51 +14,61 @@ struct Todo: Identifiable {
 }
 
 struct ContentView: View {
-    @State private var todos = [Todo(item: "Buy Groceries", isDone: false), Todo(item: "Finish hw", isDone: false), Todo(item: "", isDone: false)]
+    @State private var todos = [
+        Todo(item: "Buy Groceries", isDone: false),
+        Todo(item: "Finish hw", isDone: false), Todo(item: "", isDone: false),
+    ]
     @State private var numbers = [Int]()
-    
-    func removeRows(at offsets: IndexSet) {
-        numbers.remove(atOffsets: offsets)
-    }
+    @State private var isInfoPresented: Bool = false
+    @State private var title: String = "Todoey"
+    @State private var selectedColor: Color = .blue
     
     func addTodo() {
-            todos.append(Todo(item: "New Task", isDone: false))
-        }
-    
+        todos.append(Todo(item: "New Task", isDone: false))
+    }
+
     var body: some View {
-        VStack{
-            HStack{Text("Todoey")
+        VStack {
+            HStack {
+                Text(title)
                     .font(.largeTitle)
-                    .foregroundStyle(.yellow)
+                    .foregroundStyle(selectedColor)
+                    .fontWeight(.bold)
                 Spacer()
+
+                Button {
+                    isInfoPresented.toggle()
+                } label: {
+                    Image(systemName: "info.circle")
+                }
             }
+            .foregroundStyle(selectedColor)
             .padding()
             List {
-                ForEach($todos) {$todo in
-                    HStack {Button {
-                        todo.isDone.toggle()
-                    } label:
-                        {todo.isDone ? Image(systemName: "circle.fill"):Image(systemName: "circle")}
-                        TextField("", text: $todo.item)
-                            .textFieldStyle(.roundedBorder)
-                            .foregroundStyle(todo.isDone ? .gray : .black)
-                    }
-                }
-                .onDelete(perform: removeRows)
+                TodoRowView(todos: $todos, selectedColor: $selectedColor)
             }
-            
+
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
-            
-            HStack {Button(action: addTodo) {
-                Image(systemName: "plus.circle.fill")
-                    .foregroundStyle(.yellow)
-                    .font(.title)
-                Text("Add New Task")
-                Spacer()
+
+            HStack {
+                Button(action: addTodo) {
+                    Image(systemName: "plus.circle.fill")
+                        .font(.title)
+
+                    Text("New Reminder")
+                        .fontWeight(.bold)
+
+                    Spacer()
                 }
-            .padding()
+                .buttonStyle(.plain)
+                .padding()
             }
+            .foregroundStyle(selectedColor)
+        }
+        .preferredColorScheme(.dark)
+        .sheet(isPresented: $isInfoPresented) {
+            InfoView(title: $title, selectedColor: $selectedColor)
         }
     }
 }
