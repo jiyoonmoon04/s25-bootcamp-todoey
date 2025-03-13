@@ -26,49 +26,53 @@ struct ContentView: View {
     func addTodo() {
         todos.append(Todo(item: "New Task", isDone: false))
     }
-
+    
     var body: some View {
-        VStack {
-            HStack {
-                Text(title)
-                    .font(.largeTitle)
-                    .foregroundStyle(selectedColor)
-                    .fontWeight(.bold)
-                Spacer()
-
-                Button {
-                    isInfoPresented.toggle()
-                } label: {
-                    Image(systemName: "info.circle")
-                }
-            }
-            .foregroundStyle(selectedColor)
-            .padding()
-            List {
-                TodoRowView(todos: $todos, selectedColor: $selectedColor)
-            }
-
-            .listStyle(.plain)
-            .scrollContentBackground(.hidden)
-
-            HStack {
-                Button(action: addTodo) {
-                    Image(systemName: "plus.circle.fill")
-                        .font(.title)
-
-                    Text("New Reminder")
+        NavigationStack {
+            VStack {
+                HStack {
+                    Text(title)
+                        .font(.largeTitle)
+                        .foregroundStyle(selectedColor)
                         .fontWeight(.bold)
-
                     Spacer()
+                    
+                    
                 }
-                .buttonStyle(.plain)
+                .foregroundStyle(selectedColor)
                 .padding()
+                List {
+                    TodoRowView(todos: $todos, selectedColor: $selectedColor)
+                }
+                
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .preferredColorScheme(.dark)
+                .sheet(isPresented: $isInfoPresented) {
+                    InfoView(title: $title, selectedColor: $selectedColor)
+                }
+                .toolbar {
+                    ToolbarItem(placement: .primaryAction) {
+                        Button {
+                            isInfoPresented.toggle()
+                        } label: {
+                            Image(systemName: "info.circle")
+                        }
+                    }
+                    ToolbarItem(placement: .bottomBar) {
+                        Button(action: addTodo) {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.title)
+                                .foregroundStyle(selectedColor)
+                            
+                            Text("New Reminder")
+                                .fontWeight(.bold)
+                                .foregroundStyle(selectedColor)
+                        }
+                        .padding(.trailing, 190)
+                    }
+                }
             }
-            .foregroundStyle(selectedColor)
-        }
-        .preferredColorScheme(.dark)
-        .sheet(isPresented: $isInfoPresented) {
-            InfoView(title: $title, selectedColor: $selectedColor)
         }
     }
 }
